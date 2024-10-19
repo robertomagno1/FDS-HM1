@@ -1,0 +1,57 @@
+def histogramdd(img: np.ndarray, bins: int = 10) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Follow these steps:
+        1) Create bin intervals for each dimension.
+        2) Compute the shape of the histogram based on bin intervals.
+        3) Initialize the histogram as an array of zeros.
+        4) Compute the histogram for the input data.
+
+    Args:
+        img (np.ndarray): Input image.
+        bins (int): Number of bins.
+
+    Returns:*1.0
+        histograms (np.ndarray): Histogram.
+        bin_edges (np.ndarray): Bin edges.
+    """
+     
+    num_channels = img.shape[-1] #immage should be of shape (height, width, channels) where channels refer to the different color components that make up the image (3).
+    
+    # Step 1: Create bin edges for each dimension and stores them into a list
+    bin_edges = [] #bin edges help categorize the pixel intensity values for each color channel into discrete ranges
+    for channel in range(num_channels):
+        min_val = img[..., channel].min() #extracts all pixel values for the current channel and finds min/max
+        max_val = img[..., channel].max()
+        edges = np.linspace(min_val, max_val, bins + 1)  #generates evenly spaced bin edges between min_val and max_val, to create #bins intervals(bins+1 edges)
+        bin_edges.append(edges)
+    
+    
+    #Step:2 Compute the shape of the histogram based on bin edges
+    hist_shape = tuple(len(edges) - 1 for edges in bin_edges)  # len(edges) gives the total number of edges for that channel. Since the number of bins is always one less than the number of edges, len(edges) - 1 gives the number of bins for that channel.
+
+    
+    # Step 3: Initialize the histogram
+    histograms = np.zeros(hist_shape, dtype=int)
+    #This line computes the number of bins for each color channel based on the bin edges defined earlier and stores that information in hist_shape, which will be used to initialize the histogram.
+
+    
+    # Step 4: Compute the histogram for the input data
+    # Flatten the image and create indices for each channel
+    indices = [
+        np.digitize(img[..., channel].flatten(), bin_edges[channel]) - 1 for channel in range(num_channels)
+    ]
+    #The ellipsis (...) allows it to select all rows and columns for that channel
+    #np.digitize returns an array of indices, where each index corresponds to the bin number that the respective pixel value falls into. If a pixel value is less than the minimum edge, it returns 0. If it's greater than the maximum edge, it returns len(bin_edges[channel])
+    #(-1): The result of np.digitize is adjusted by subtracting 1. This is done to align the indices with the actual bins, since the first bin starts at index 0.
+
+    # Handle cases where the indices are out of bounds
+    for idx in zip(*indices):
+        # Clip indices to be within the valid range
+        clipped_idx = tuple(max(0, min(i, hist_shape[c] - 1)) for c, i in enumerate(idx))
+        histograms[clipped_idx] += 1
+    #idx: if there are three channels (R, G, B), each idx might look like (.,.,.)
+    #clipped_idx: This line ensures that each index is within the valid range for the histogram.
+    #summ up: this code counts how many pixel values fall into each bin for each channel by iterating over all pixels.
+    
+
+    return histograms, bin_edges
