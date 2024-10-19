@@ -1,0 +1,50 @@
+x = np.linspace(0, 50, 200)
+s1 = 2 * np.sin(x) + np.sin(3 * x) + 0.5 * np.sin(7 * x)
+s2 = 2 * np.cos(x) + np.cos(3 * x) + 0.5 * np.cos(7 * x)
+sigma, filter_size = 1,7
+
+G, _ = gauss(sigma, filter_size)
+L, _ = laplace(sigma, filter_size)
+#M, _ = median_filter(s1 + s2, filter_size)
+
+# Verify the equations
+
+# 1. g(S1 + S2) = g(S1) + g(S2)
+g_S1_plus_S2 = np.convolve(s1 + s2, G, mode='same')
+g_S1 = np.convolve(s1, G, mode='same')
+g_S2 = np.convolve(s2, G, mode='same')
+eq1_verified = np.allclose(g_S1_plus_S2, g_S1 + g_S2)
+
+# 2. l(S1 + S2) = l(S1) + l(S2)
+l_S1_plus_S2 = np.convolve(s1 + s2, L, mode='same')
+l_S1 = np.convolve(s1, L, mode='same')
+l_S2 = np.convolve(s2, L, mode='same')
+eq2_verified = np.allclose(l_S1_plus_S2, l_S1 + l_S2)
+
+# 3. g(l(S1 + S2)) = (g * l) * S1 + (g * l) * S2
+g_l_S1_plus_S2 = np.convolve(l_S1_plus_S2, G, mode='same')
+g_l_S1 = np.convolve(l_S1, G, mode='same')
+g_l_S2 = np.convolve(l_S2, G, mode='same')
+eq3_verified = np.allclose(g_l_S1_plus_S2, g_l_S1 + g_l_S2)
+
+# 4. m(S1 + S2) != m(S1) + m(S2)
+m_S1_plus_S2 = median_filter(s1 + s2, filter_size)
+m_S1 = median_filter(s1, filter_size)
+m_S2 = median_filter(s2, filter_size)
+eq4_verified = np.allclose(m_S1_plus_S2, m_S1 + m_S2)
+
+# Print results
+print("Equation (1) verified:", eq1_verified)
+print("Equation (2) verified:", eq2_verified)
+print("Equation (3) verified:", eq3_verified)
+print("Equation (4) verified (should be False):", eq4_verified)
+
+
+g_s1_s2 = g_S1_plus_S2
+g_s1_g_s2 = g_S1+g_S2
+l_s1_s2 = l_S1_plus_S2
+l_s1_l_s2 = l_S1+l_S2
+g_l_s1_s2 = g_l_S1_plus_S2 
+g_l_s1_g_l_s2 = g_l_S1+g_l_S2
+m_s1_s2 = m_S1_plus_S2
+m_s1_m_s2 = m_S1+m_S2
