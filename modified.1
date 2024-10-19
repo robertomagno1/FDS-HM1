@@ -1,0 +1,52 @@
+x = np.linspace(0, 50, 200)
+s1 = 2 * np.sin(x) + np.sin(3 * x) + 0.5 * np.sin(7 * x)
+s2 = 2 * np.cos(x) + np.cos(3 * x) + 0.5 * np.cos(7 * x)
+sigma, filter_size = 1,7
+
+#####################################################
+##                 YOUR CODE HERE                  ##
+#####################################################
+
+s1_g,_= gauss(sigma, filter_size)
+s1_l,_= laplace(sigma, filter_size)
+s2_g,_ = gauss(sigma, filter_size)
+s2_l,_= laplace(sigma, filter_size)
+s1_m = median_filter(s1, filter_size)
+s2_m = median_filter(s2, filter_size)
+# Calculating the terms based on the equations
+# Assuming EQ.1, EQ.2, EQ.3, EQ.4 are to combine the signals in some manner:
+
+# For demonstration, we assume these operations:
+# EQ.1: g_s1_s2 = s1_g * s2
+# EQ.1: g_s1_g_s2 = s1_g * s2_g
+
+g_s1_s2 = np.convolve(s1_g, s2, mode='same')  # First term of EQ.1 (convolution)
+g_s1_g_s2 = np.convolve(s1_g, s2_g, mode='full')  # Second term of EQ.1
+
+# EQ.2: l_s1_s2 = s1_l * s2
+# EQ.2: l_s1_l_s2 = s1_l * s2_l
+
+l_s1_s2 = np.convolve(s1_l, s2, mode='same')  # First term of EQ.2
+l_s1_l_s2 = np.convolve(s1_l, s2_l, mode='full')  # Second term of EQ.2
+
+# EQ.3: g_l_s1_s2 = s1_g * s2
+# EQ.3: g_l_s1_g_l_s2 = s1_g * s1_l * s2_g
+
+g_l_s1_s2 = np.convolve(s1_g, s2, mode='same')  # First term of EQ.3
+g_l_s1_g_l_s2 = np.convolve(s1_g, s1_l, mode='same') * s2_g  # Second term of EQ.3
+
+# EQ.4: m_s1_s2 = median_filter(s1 + s2, filter_size)
+# EQ.4: m_s1_m_s2 = median_filter(s1_m + s2_m, filter_size)
+
+m_s1_s2 = median_filter(s1 + s2, filter_size)  # First term of EQ.4
+m_s1_m_s2 = median_filter(s1_m + s2_m, filter_size)  # Second term of EQ.4
+
+
+#g_s1_s2 = "YOUR CODE FOR THE FIRST TERM OF EQ.1"
+#g_s1_g_s2 = "YOUR CODE FOR THE SECOND TERM OF EQ.1"
+#l_s1_s2 = "YOUR CODE FOR THE FIRST TERM OF EQ.2"
+#l_s1_l_s2 = "YOUR CODE FOR THE SECOND TERM OF EQ.2"
+#g_l_s1_s2 = "YOUR CODE FOR THE FIRST TERM OF EQ.3"
+#g_l_s1_g_l_s2 = "YOUR CODE FOR THE SECOND TERM OF EQ.3"
+#m_s1_s2 = "YOUR CODE FOR THE FIRST TERM OF EQ.4"
+#m_s1_m_s2 = "YOUR CODE FOR THE SECOND TERM OF EQ.4"
