@@ -1,0 +1,91 @@
+def my_accuracy_score(y_true: list, y_pred: list) -> float:
+    """
+    Compute the accuracy score.
+
+    Args:
+        y_true (list): list of true labels.
+        y_pred (list): list of predicted labels.
+
+    Returns:
+        float: accuracy score.
+    """
+
+    #accuracy= correct predictions/total examples
+    accuracy = sum(y_true == y_pred) / len(y_true)
+
+
+
+    return accuracy
+
+
+def my_precision_score(y_true: list, y_pred: list) -> float:
+    """
+    Compute the precision score.
+
+    Args:
+        y_true (list): list of true labels.
+        y_pred (list): list of predicted labels.
+
+    Returns:
+        float: precision score.
+    """  
+    true_positives = np.sum((y_true == 1) & (y_pred == 1))
+    false_positives = np.sum((y_true == 0) & (y_pred == 1))
+    precision = true_positives / (true_positives + false_positives) #should I consider the case true_positives + false_positives=0? if yes put if condition
+    return precision
+
+
+def my_recall_score(y_true: list, y_pred: list) -> float:
+    """
+    Compute the recall score.
+
+    Args:
+        y_true (list): list of true labels.
+        y_pred (list): list of predicted labels.
+
+    Returns:
+        float: recall score.
+    """  
+    true_positives = np.sum((y_true == 1) & (y_pred == 1))
+    false_negatives = np.sum((y_true == 1) & (y_pred == 0))
+    recall = true_positives / (true_positives + false_negatives)
+    return recall
+
+
+def my_f1_score(y_true: list, y_pred: list) -> float:
+    """
+    Compute the f1 score.
+
+    Args:
+        y_true (list): list of true labels.
+        y_pred (list): list of predicted labels.
+
+    Returns:
+        float: f1 score.
+    """  
+    precision = my_precision_score(y_true, y_pred)
+    recall = my_recall_score(y_true, y_pred)
+    f1 = 2 * (precision * recall) / (precision + recall)
+    return f1
+
+
+def my_confusion_matrix(y_true: list, y_pred: list) -> np.ndarray:
+    """
+    Compute the confusion matrix.
+
+    Args:
+        y_true (list): list of true labels.
+        y_pred (list): list of predicted labels.
+
+    Returns:
+        np.ndarray: confusion matrix.
+    """  
+    true_positive = np.sum((y_true == 1) & (y_pred == 1))
+    true_negative = np.sum((y_true == 0) & (y_pred == 0))
+    false_positive = np.sum((y_true == 0) & (y_pred == 1))
+    false_negative = np.sum((y_true == 1) & (y_pred == 0))
+
+    # Construct the confusion matrix
+    matrix = [[true_negative, false_positive],[false_negative, true_positive]]
+
+    return np.array(matrix, dtype=np.int64)
