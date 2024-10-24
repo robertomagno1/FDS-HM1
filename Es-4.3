@@ -1,0 +1,28 @@
+def topk_accuracy(y_true, y_pred, k:int) -> float:
+    """
+    Compute the Top-K accuracy, i.e. check whether the
+    correct label is in the top-k results.
+
+    Args:
+        y_true (list): list of correct labels
+        y_pred (np.array): A matrix of size (num_samples, num_results)
+            where each cell contains the predicted score for each
+            element in the dataset
+        k (int): number of best matching items to consider
+
+    Returns:
+        topk_accuracy (float)
+    """
+    
+
+    #Indices of the k highest predictions sorting them and then taking the last k cols.
+    topk_indices = np.argsort(y_pred, axis=1)[:, -k:]
+
+    #Count the correct predictions 
+    correct = np.sum([y_true[i] in topk_indices[i] for i in range(len(y_true))])
+    #store the accuracy
+    topk_accuracy = correct / len(y_true)
+
+    
+    
+    return topk_accuracy
